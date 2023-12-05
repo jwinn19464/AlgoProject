@@ -6,17 +6,27 @@
 
 def generate_statements(num_suspects):
     import random
+    import names
 
-    # Generate statements for suspects
+    # Generate unique random names for suspects using a set
+    unique_suspects = set()
+    while len(unique_suspects) < num_suspects:
+        name = names.get_first_name()
+        unique_suspects.add(name)
+
+    suspects = list(unique_suspects)  # Convert set to list for shuffling
+    random.shuffle(suspects)
+
+    # Create statements based on shuffled suspects
     statements = []
-    for i in range(1, num_suspects + 1):
-        accusation = random.randint(1, num_suspects)
-        while accusation == i:
-            accusation = random.randint(1, num_suspects)
+    for i in range(num_suspects):
         if i % 2 == 0:
-            statement = f"{i}: \"{accusation} is the thief.\""
+            accusation = random.choice(suspects)
+            while accusation == suspects[i]:  # Ensure a suspect doesn't accuse themselves
+                accusation = random.choice(suspects)
+            statement = f"{suspects[i]}: \"{accusation} is the thief.\""
         else:
-            statement = f"{i}: \"I'm not the thief.\""
+            statement = f"{suspects[i]}: \"I'm not the thief.\""
         statements.append(statement)
 
     return statements
@@ -30,8 +40,6 @@ statements = generate_statements(num_suspects)
 # Display the suspects and their statements
 for statement in statements:
     print(statement)
-
-
 
 
 # def find_thief(suspects, current_index, statements, truth_count, thief):
