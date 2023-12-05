@@ -29,52 +29,54 @@ def generate_statements(num_suspects):
             statement = f"{suspects[i]}: \"I'm not the thief.\""
         statements.append(statement)
 
-    return statements
+    return suspects, statements
 
 # Get user input for the number of suspects
 num_suspects = int(input("Enter the number of suspects: "))
 
 # Generate suspects and their statements
-statements = generate_statements(num_suspects)
+suspects, statements = generate_statements(num_suspects)
 
 # Display the suspects and their statements
 for statement in statements:
     print(statement)
 
+# Print the list of suspects
+print("Suspects:", suspects)
 
-# def find_thief(suspects, current_index, statements, truth_count, thief):
-#     # base case: when all suspects have been checked, see if conditions have been met to find thief
-#     if current_index == len(suspects):
-#         # potential solution if only 1 suspect is being truthful
-#         if truth_count == 1:
-#             return True, thief
-#         return False, None
+def find_thief(suspects, current_index, statements, truth_count, thief):
+    # base case: when all suspects have been checked, see if conditions have been met to find thief
+    if current_index == len(suspects):
+        # potential solution if only 1 suspect is being truthful
+        if truth_count == 1:
+            return True, thief
+        return False, None
     
-#     # Assume the current suspect is lying and calls find_thief for next suspect
-#     result = find_thief(suspects, current_index + 1, statements, truth_count, thief)
-#     if result[0]:
-#         return result
+    # Assume the current suspect is lying and calls find_thief for next suspect
+    result = find_thief(suspects, current_index + 1, statements, truth_count, thief)
+    if result[0]:
+        return result
     
-#     # If assuming the current suspect as a liar didn't lead to a solution, consider them telling the truth
-#     truth_count += 1
-#     result = find_thief(suspects, current_index + 1, statements, truth_count, suspects[current_index])
-#     if result[0]:
-#         return result
+    # If assuming the current suspect as a liar didn't lead to a solution, consider them telling the truth
+    truth_count += 1
+    result = find_thief(suspects, current_index + 1, statements, truth_count, suspects[current_index])
+    if result[0]:
+        return result
     
-#     return False, None
+    return False, None
 
 
-# solution = find_thief(suspects, 0, statements, 0, None)
-# if solution[0]:
-#     print(f"The thief is {solution[1]}")
-# else:
-#     print("No solution found")
+solution = find_thief(suspects, 0, statements, 0, None)
+if solution[0]:
+    print(f"The thief is {solution[1]}")
+else:
+    print("No solution found")
 
 
-# # # Test scenario
-# # # suspects = ['A', 'B', 'C']
-# # # statements = [
-# # #     "I am not the thief",
-# # #     "A is the thief",
-# # #     "I am not the thief"
-# # # ]
+# # Test scenario
+# # suspects = ['A', 'B', 'C']
+# # statements = [
+# #     "I am not the thief",
+# #     "A is the thief",
+# #     "I am not the thief"
+# # ]
