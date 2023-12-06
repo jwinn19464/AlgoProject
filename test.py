@@ -1,4 +1,4 @@
-# separate file to test methods
+# separate file to test methods before adding to final product
 def generate_statements(num_suspects):
     import random
     import names
@@ -32,13 +32,13 @@ num_suspects = int(input("Enter the number of suspects: "))
 # Generate suspects and their statements
 suspects, statements = generate_statements(num_suspects)
 
-print(statements)
+# print(statements)
 # Display the suspects and their statements
 for statement in statements:
     print(statement)
 
 # Print the list of suspects
-print("Suspects:", suspects)
+# print("Suspects:", suspects)
 
 def parse_logic(statements):
     truth_dict = {}  # Dictionary to store truth information
@@ -50,67 +50,40 @@ def parse_logic(statements):
         if "the thief" in assertion:
             subject = assertion.split("is the thief.")[0].strip()
             if assertion.endswith("is the thief."):
-                if name in truth_dict:
-                    truth_dict[name]["isThief"] = True
-                else:
-                    truth_dict[name] = {"subject": subject, "isThief": True, "isNotThief": False}
+                truth_dict[name] = {"subject": subject, "isThief": True, "isNotThief": False, "t_count": 0}
             else:
-                if name in truth_dict:
-                    truth_dict[name]["isNotThief"] = True
-                else:
-                    truth_dict[name] = {"isThief": False, "isNotThief": True}
+                truth_dict[name] = {"isThief": False, "isNotThief": True, "t_count": 0}
 
     return truth_dict
 
-boolean_results = parse_logic(statements)
-print(boolean_results)
+relations = parse_logic(statements)
+# print(relations)
 
-# for result in boolean_results:
-#     print(result)
-    
+def find_thief(relations, thief):
+    t_count = {suspect: 0 for suspect in relations}  # Initialize count for each suspect
 
-# def create_truth_table(suspects, boolean_results):
-#     isThief = False
-#     isNotThief = True
-#     truth_table = {suspect: None for suspect in suspects}
-#     print(truth_table)
+    for suspect, info in relations.items():
+        for other_suspect, other_info in relations.items():
+            if suspect != thief:
+                # If the suspect accuses the thief and is telling the truth
+                if other_info.get("isThief", False) and other_info.get("subject") == suspect:
+                    t_count[suspect] += 1
+                # If the suspect denies being the thief and is telling the truth
+                elif other_info.get("isNotThief", False) and other_suspect != suspect:
+                    t_count[suspect] += 1
 
-#     for boolean_statement in boolean_results:
-#         name, statement = boolean_statement.split(": ")
-#         print(name)
-#         print(statement)
-#         suspect = name.strip()
-#         print("suspect: ", suspect)
-# #         print("s:", statement)
-#         if " == " in statement:
-#             truth_value = statement.split(" == ")[1].strip(" '")
-#             # print("t-val: ", truth_value)
-#         # else:
-#         #     truth_value = statement.split(" != ")[1].strip(" '")
-#             # print("t-val: ", truth_value)
-#         if truth_table[suspect] is None:
-#             truth_table[suspect] = truth_value
-#             print("t-table:", truth_table)
-# #         # elif truth_table[suspect] != truth_value:
-# #         #     truth_table[suspect] = False  # Inconsistency found, mark as False
+    # Find the suspect with the maximum true statements
+    max_true_statements = max(t_count.values())
+    possible_thieves = [suspect for suspect, count in t_count.items() if count == max_true_statements]
 
-#     return truth_table
-# create_truth_table(suspects, boolean_results)
-# def eliminate_inconsistencies(truth_table):
-#     consistent_suspects = [suspect for suspect, value in truth_table.items() if value]
+    if len(possible_thieves) == 1:
+        return possible_thieves[0]
+    else:
+        return None  # More than one suspect might be the thief
 
-#     return consistent_suspects
-
-# # Assuming only one person is telling the truth
-# def identify_thief(suspects, statements):
-#     boolean_results = parse_logic(statements)
-#     truth_table = create_truth_table(suspects, boolean_results)
-#     consistent_suspects = eliminate_inconsistencies(truth_table)
-
-#     if len(consistent_suspects) == 1:
-#         return consistent_suspects[0]
-#     else:
-#         return "No clear identification"  # More than one consistent suspect
-
-# thief = identify_thief(suspects, statements)
-# print(f"The thief is: {thief}")
+for suspect in suspects:
+    # assume current suspect is the thief
+    thief = find_thief(relations, suspect)
+    if thief:
+        print(f"The thief is: {thief}")
+        break

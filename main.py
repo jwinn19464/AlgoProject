@@ -1,3 +1,4 @@
+# different approaches taken
 def generate_statements(num_suspects):
     import random
     import names
@@ -62,3 +63,4 @@ boolean_results = parse_logic(statements)
 
 for result in boolean_results:
     print(result)
+    
